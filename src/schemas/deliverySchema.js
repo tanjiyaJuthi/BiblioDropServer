@@ -1,0 +1,70 @@
+import mongoose from "mongoose";
+
+export const deliverySchema = new mongoose.Schema(
+    {
+        bookId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Book",
+            required: true,
+        },
+
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+
+        librarianId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+
+        transactionId: {
+            type: String,
+            default: null,
+        },
+
+        deliveryFee: {
+            type: Number,
+            required: true,
+        },
+
+        paymentStatus: {
+            type: String,
+            enum: ["Pending", "Paid", "Failed"],
+            default: "Pending",
+        },
+
+        deliveryStatus: {
+            type: String,
+            enum: [
+                "Pending",
+                "Dispatched",
+                "Delivered",
+            ],
+            default: "Pending",
+        },
+
+        requestDate: {
+            type: Date,
+            default: Date.now,
+        },
+
+        dispatchedDate: Date,
+
+        deliveredDate: Date,
+    },
+    {
+        timestamps: true,
+        strict: "throw",
+    }
+);
+
+deliverySchema.index({
+    userId: 1,
+});
+
+deliverySchema.index({
+    librarianId: 1,
+});
