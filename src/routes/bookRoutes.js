@@ -42,7 +42,7 @@ bookRoutes.patch(
 bookRoutes.delete(
     "/:id",
     verifyToken,
-    role("librarian"),
+    role("librarian", "admin"),
     deleteBook
 );
 

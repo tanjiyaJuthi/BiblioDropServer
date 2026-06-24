@@ -1,5 +1,6 @@
 import express from "express";
 
+import {role} from "../middleware/role.js";
 import {verifyToken} from "../middleware/verifyToken.js";
 
 import { 
@@ -13,26 +14,36 @@ import {
 const categoryRoutes = express.Router();
 
 categoryRoutes.get(
-    "/", 
+    "/",
+    verifyToken,
+    role('admin'),
     getCategories
 );
 categoryRoutes.get(
-    "/:id", 
+    "/:id",
+    verifyToken,
+    role('admin'),
     getCategoryById
 );
 
 categoryRoutes.post(
-    "/", 
+    "/",
+    verifyToken, 
+    role('admin'),
     createCategory
 );
 
 categoryRoutes.patch(
-    "/:id", 
+    "/:id",
+    verifyToken,
+    role('admin'),
     updateCategory
 );
 
 categoryRoutes.delete(
     "/:id", 
+    verifyToken,
+    role('admin'),
     deleteCategory
 );
 

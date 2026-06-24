@@ -1,10 +1,13 @@
 import express from "express";
 
 import {verifyToken} from "../middleware/verifyToken.js";
+import {role} from "../middleware/role.js";
 
 import { 
     getMyProfile, 
-    updateProfileImage 
+    updateProfileImage,
+    getAllUsers,
+    deleteUser,
 } from '../controllers/profileController.js';
 
 export const profileRoutes =  express.Router();
@@ -19,6 +22,20 @@ profileRoutes.patch(
     "/update-image",
     verifyToken,
     updateProfileImage
+);
+
+profileRoutes.get(
+  "/",
+  verifyToken,
+  role("admin"),
+  getAllUsers
+);
+
+profileRoutes.delete(
+  "/:id",
+  verifyToken,
+  role("admin"),
+  deleteUser
 );
 
 export default profileRoutes;

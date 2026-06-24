@@ -95,3 +95,47 @@ export const updateProfileImage = async (req, res) => {
     });
   }
 };
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await Profile.find({})
+      .select("name email role")
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      data: users,
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+
+    await User.findByIdAndDelete(
+      req.params.id
+    );
+
+    res.status(200).json({
+      success:true,
+      message:"User deleted",
+    });
+
+  } catch(error) {
+
+    res.status(500).json({
+      success:false,
+      message:error.message,
+    });
+
+  }
+
+};

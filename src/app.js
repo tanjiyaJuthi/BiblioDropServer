@@ -37,7 +37,7 @@ await connectMongoose();
 app.use("/api/profile", profileRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/comment", commentRoutes);
-app.use("/api/delivery ", deliveryRoutes);
+app.use("/api/delivery", deliveryRoutes);
 app.use("/api/rating", ratingRoutes);
 app.use("/api/readingList", readingListRoutes);
 app.use("/api/role", roleRoutes);

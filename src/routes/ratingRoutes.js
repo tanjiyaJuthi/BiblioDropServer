@@ -1,6 +1,7 @@
 import express from "express";
 
 import {verifyToken} from "../middleware/verifyToken.js";
+import {role} from "../middleware/role.js";
 
 import { 
     createRating,
@@ -14,6 +15,7 @@ const ratingRoutes = express.Router();
 ratingRoutes.post(
     "/",
     verifyToken,
+    role('user'),
     createRating
 );
 
@@ -26,12 +28,14 @@ ratingRoutes.get(
 ratingRoutes.patch(
     "/",
     verifyToken,
+    role('user'),
     updateRating
 );
 
 ratingRoutes.delete(
     "/",
     verifyToken,
+    role('user'),
     deleteRating
 );
 

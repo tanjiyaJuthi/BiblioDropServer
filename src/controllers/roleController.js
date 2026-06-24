@@ -62,7 +62,7 @@ export const getAllRoles = async (req, res) => {
     try {
         const roles = await Role
             .find({})
-            .select({ _id: 0, title: 1 })
+            .select("title description")
             .lean();
 
         return res.status(200).json({
@@ -80,11 +80,13 @@ export const getAllRoles = async (req, res) => {
 
 export const updateRole = async (req, res) => {
     try {
-        const { title } = req.body;
+        let { title, description } = req.body;
 
         if (title) {
+            title = title.trim().toLowerCase();
+
             const exists = await Role.findOne({
-                title: title.trim().toLowerCase(),
+                title,
                 _id: { $ne: req.params.id },
             });
 
@@ -98,11 +100,13 @@ export const updateRole = async (req, res) => {
 
         const updatedRole = await Role.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            {
+                ...(title && { title }),
+                ...(description && { description }),
+            },
             {
                 new: true,
                 runValidators: true,
-                context: "query",
             }
         );
 
@@ -113,14 +117,15 @@ export const updateRole = async (req, res) => {
             });
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             data: updatedRole,
         });
+
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message,
+        return res.status(500).json({
+            success:false,
+            message:error.message,
         });
     }
 };

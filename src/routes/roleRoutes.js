@@ -1,5 +1,6 @@
 import express from "express";
 
+import {role} from "../middleware/role.js";
 import {verifyToken} from "../middleware/verifyToken.js";
 
 import { 
@@ -21,24 +22,28 @@ roleRoutes.get(
 roleRoutes.get(
     "/:id",
     verifyToken,
+    role('admin'),
     getRoleById
 );
 
 roleRoutes.post(
     "/",
     verifyToken,
+    role('admin'),
     createRole
 );
 
 roleRoutes.patch(
     "/:id",
     verifyToken,
+    role('admin'),
     updateRole
 );
 
 roleRoutes.delete(
     "/:id",
     verifyToken,
+    role('admin'),
     deleteRole
 );
 

@@ -1,6 +1,7 @@
 import express from "express";
 
 import {verifyToken} from "../middleware/verifyToken.js";
+import {role} from "../middleware/role.js";
 
 import { 
     createDelivery,
@@ -16,36 +17,42 @@ const deliveryRoutes = express.Router();
 deliveryRoutes.post(
     "/",
     verifyToken,
+    role('user'),
     createDelivery
 );
 
 deliveryRoutes.get(
     "/user",
     verifyToken,
+    role('user'),
     getUserDeliveries
 );
 
 deliveryRoutes.get(
     "/librarian",
     verifyToken,
+    role('librarian'),
     getLibrarianDeliveries
 );
 
 deliveryRoutes.patch(
     "/:id/status",
     verifyToken,
+    role('librarian'),
     updateDeliveryStatus
 );
 
 deliveryRoutes.get(
     "/admin",
     verifyToken,
+    role('admin'),
     getAllDeliveries
 );
 
 deliveryRoutes.delete(
     "/:id",
     verifyToken,
+    role("user"),
     cancelDelivery
 );
 
