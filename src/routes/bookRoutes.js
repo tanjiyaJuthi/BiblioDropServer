@@ -10,9 +10,17 @@ import {
     updateBook,
     deleteBook,
     approveBook,
+    getAllBooksDashboard,
 } from '../controllers/bookController.js';
 
 const bookRoutes = express.Router();
+
+bookRoutes.get(
+    "/",
+    verifyToken,
+    role("admin", "librarian"),
+    getAllBooksDashboard
+);
 
 bookRoutes.get(
     "/",

@@ -16,9 +16,10 @@ const categoryRoutes = express.Router();
 categoryRoutes.get(
     "/",
     verifyToken,
-    role('admin'),
+    role("librarian", "admin"),
     getCategories
 );
+
 categoryRoutes.get(
     "/:id",
     verifyToken,
