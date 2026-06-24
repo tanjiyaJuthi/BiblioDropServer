@@ -1,6 +1,5 @@
 import { Profile } from "../models/profileModel.js";
 
-// ================= GET FULL PROFILE =================
 export const getMyProfile = async (req, res) => {
     try {
     const userId = req.user?.id;
@@ -39,7 +38,6 @@ export const getMyProfile = async (req, res) => {
   }
 };
 
-// ================= UPDATE PROFILE IMAGE =================
 export const updateProfileImage = async (req, res) => {
   try {
     const userId = req.user?.id;
@@ -96,6 +94,43 @@ export const updateProfileImage = async (req, res) => {
   }
 };
 
+export const updateUserRole = async (req, res) => {
+  try {
+    const { role } = req.body;
+
+    if (!["admin", "librarian"].includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid role",
+      });
+    }
+
+    const user = await Profile.findByIdAndUpdate(
+      req.params.id,
+      { role },
+      { new: true }
+    ).select("name email role");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Role updated successfully",
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 export const getAllUsers = async (req, res) => {
   try {
     const users = await Profile.find({})
@@ -119,23 +154,16 @@ export const getAllUsers = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   try {
-
-    await User.findByIdAndDelete(
-      req.params.id
-    );
+    await Profile.findByIdAndDelete(req.params.id);
 
     res.status(200).json({
-      success:true,
-      message:"User deleted",
+      success: true,
+      message: "User deleted",
     });
-
-  } catch(error) {
-
+  } catch (error) {
     res.status(500).json({
-      success:false,
-      message:error.message,
+      success: false,
+      message: error.message,
     });
-
   }
-
 };

@@ -75,6 +75,31 @@ export const getBookById = async (req,res)=>{
     }
 };
 
+export const getBookByIdDashboard = async (req, res) => {
+    try {
+        const book = await Book.findById(req.params.id)
+            .populate("category", "name")
+            .populate("librarianId", "name image email");
+
+        if (!book) {
+            return res.status(404).json({
+                success: false,
+                message: "Book not found",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: book,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 export const getAllBooks = async (req, res) => {
     try {
         const {
@@ -246,6 +271,8 @@ export const updateBook = async(req,res)=>{
             }
         });
 
+        book.approvalStatus = "Pending";
+
         await book.save();
 
         res.json({
@@ -260,35 +287,45 @@ export const updateBook = async(req,res)=>{
     }
 };
 
-export const deleteBook = async(req,res)=>{
-    try{
-        const book =
-        await Book.findOneAndDelete({
-            _id:req.params.id,
-            librarianId:req.user.id
-        });
+export const deleteBook = async (req, res) => {
+    try {
 
-        if(!book){
+        let book;
+
+        if (req.user.role === "admin") {
+            book = await Book.findByIdAndDelete(
+                req.params.id
+            );
+        } else {
+            book = await Book.findOneAndDelete({
+                _id: req.params.id,
+                librarianId: req.user.id,
+            });
+        }
+
+        if (!book) {
             return res.status(404).json({
-                message:"Book not found"
+                success: false,
+                message: "Book not found",
             });
         }
 
         res.json({
-            success:true,
-            message:"Book deleted"
+            success: true,
+            message: "Book deleted",
         });
-    }catch(error){
+
+    } catch (error) {
         res.status(500).json({
-            message:error.message
+            success: false,
+            message: error.message,
         });
     }
 };
 
 export const approveBook = async(req,res)=>{
     try{
-        const book =
-        await Book.findByIdAndUpdate(
+        const book = await Book.findOneAndUpdate(
             {
                 _id:req.params.id,
                 approvalStatus:"Pending"
@@ -297,7 +334,8 @@ export const approveBook = async(req,res)=>{
                 approvalStatus:"Published"
             },
             {
-                new:true
+                returnDocument: "after",
+                runValidators: true,
             }
         );
 
@@ -316,6 +354,56 @@ export const approveBook = async(req,res)=>{
     }catch(error){
         res.status(500).json({
             message:error.message
+        });
+    }
+};
+
+export const getPendingBooks = async (req, res) => {
+    try {
+        const books = await Book.find({
+            approvalStatus: "Pending",
+        })
+            .populate("category", "name")
+            .populate("librarianId", "name image email")
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            data: books,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const unpublishBook = async (req, res) => {
+    try {
+        const book =
+            await Book.findByIdAndUpdate(
+                req.params.id,
+                { approvalStatus: "Pending", },
+                { new: true, }
+            );
+
+        if (!book) {
+            return res.status(404).json({
+                success: false,
+                message: "Book not found",
+            });
+        }
+
+        res.json({
+            success: true,
+            message: "Book unpublished",
+            data: book,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
         });
     }
 };

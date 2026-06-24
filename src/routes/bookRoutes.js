@@ -12,6 +12,9 @@ import {
     approveBook,
     getAllBooksDashboard,
     getBookForEdit,
+    getPendingBooks,
+    unpublishBook,
+    getBookByIdDashboard,
 } from '../controllers/bookController.js';
 
 const bookRoutes = express.Router();
@@ -24,21 +27,29 @@ bookRoutes.get(
 );
 
 bookRoutes.get(
-    "/",
-    getAllBooks
+    "/dashboard/:id",
+    verifyToken,
+    role("admin", "librarian"),
+    getBookByIdDashboard
 );
 
 bookRoutes.get(
-    "/:id",
-    getBookById
+    "/pending",
+    verifyToken,
+    role("admin"),
+    getPendingBooks
 );
 
 bookRoutes.get(
-  "/edit/:id",
-  verifyToken,
-  role("librarian"),
-  getBookForEdit
+    "/edit/:id",
+    verifyToken,
+    role("librarian"),
+    getBookForEdit
 );
+
+bookRoutes.get("/", getAllBooks);
+
+bookRoutes.get("/:id", getBookById);
 
 // librarian
 bookRoutes.post(
@@ -55,18 +66,25 @@ bookRoutes.patch(
     updateBook
 );
 
-bookRoutes.delete(
-    "/:id",
-    verifyToken,
-    role("librarian", "admin"),
-    deleteBook
-);
-
 bookRoutes.patch(
     "/approve/:id",
     verifyToken,
     role("admin"),
     approveBook
+);
+
+bookRoutes.patch(
+    "/unpublish/:id",
+    verifyToken,
+    role("admin"),
+    unpublishBook
+);
+
+bookRoutes.delete(
+    "/:id",
+    verifyToken,
+    role("librarian", "admin"),
+    deleteBook
 );
 
 export default bookRoutes;

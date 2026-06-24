@@ -8,6 +8,7 @@ import {
     updateProfileImage,
     getAllUsers,
     deleteUser,
+    updateUserRole,
 } from '../controllers/profileController.js';
 
 export const profileRoutes =  express.Router();
@@ -22,6 +23,13 @@ profileRoutes.patch(
     "/update-image",
     verifyToken,
     updateProfileImage
+);
+
+profileRoutes.patch(
+  "/:id/role",
+  verifyToken,
+  role("admin"),
+  updateUserRole
 );
 
 profileRoutes.get(

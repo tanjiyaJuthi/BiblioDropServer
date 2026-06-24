@@ -82,8 +82,8 @@ export const updateRating = async (req, res) => {
                 rating
             },
             {
-                new: true,
-                runValidators: true
+                returnDocument: "after",
+                runValidators: true,
             }
         );
 
