@@ -171,6 +171,32 @@ export const getAllBooks = async (req, res) => {
     }
 };
 
+export const getBookForEdit = async (req, res) => {
+  try {
+    const book = await Book.findOne({
+      _id: req.params.id,
+      librarianId: req.user.id,
+    });
+
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      data: book,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 export const getAllBooksDashboard = async (req, res) => {
     try {
         const books = await Book.find({})

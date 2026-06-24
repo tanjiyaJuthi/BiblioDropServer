@@ -11,12 +11,13 @@ import {
     deleteBook,
     approveBook,
     getAllBooksDashboard,
+    getBookForEdit,
 } from '../controllers/bookController.js';
 
 const bookRoutes = express.Router();
 
 bookRoutes.get(
-    "/",
+    "/dashboard",
     verifyToken,
     role("admin", "librarian"),
     getAllBooksDashboard
@@ -30,6 +31,13 @@ bookRoutes.get(
 bookRoutes.get(
     "/:id",
     getBookById
+);
+
+bookRoutes.get(
+  "/edit/:id",
+  verifyToken,
+  role("librarian"),
+  getBookForEdit
 );
 
 // librarian
