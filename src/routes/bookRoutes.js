@@ -16,6 +16,7 @@ import {
     unpublishBook,
     getBookByIdDashboard,
     publishBook,
+    getFeaturedBooks,
 } from '../controllers/bookController.js';
 
 const bookRoutes = express.Router();
@@ -47,6 +48,8 @@ bookRoutes.get(
     role("librarian"),
     getBookForEdit
 );
+
+bookRoutes.get("/featured", getFeaturedBooks);
 
 bookRoutes.get("/", getAllBooks);
 

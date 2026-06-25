@@ -9,21 +9,23 @@ import {
     getCategoryById,
     updateCategory,
     deleteCategory,
+    getCategoriesWithCounts,
 } from '../controllers/categoryController.js';
 
 const categoryRoutes = express.Router();
 
 categoryRoutes.get(
+    "/with-counts",
+    getCategoriesWithCounts
+);
+
+categoryRoutes.get(
     "/",
-    verifyToken,
-    role("librarian", "admin"),
     getCategories
 );
 
 categoryRoutes.get(
     "/:id",
-    verifyToken,
-    role('admin'),
     getCategoryById
 );
 

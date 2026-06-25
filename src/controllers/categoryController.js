@@ -153,3 +153,59 @@ export const deleteCategory = async (req, res) => {
         });
     }
 };
+
+export const getCategoriesWithCounts = async (req, res) => {
+    try {
+        const categories = await Category.aggregate([
+            {
+                $match: {
+                    isActive: true,
+                },
+            },
+            {
+                $lookup: {
+                    from: "books",
+                    localField: "_id",
+                    foreignField: "category",
+                    as: "books",
+                },
+            },
+            {
+                $project: {
+                    name: 1,
+                    image: 1,
+                    description: 1,
+                    bookCount: {
+                        $size: {
+                            $filter: {
+                                input: "$books",
+                                as: "book",
+                                cond: {
+                                    $eq: [
+                                        "$$book.approvalStatus",
+                                        "Published",
+                                    ],
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            {
+                $sort: {
+                    bookCount: -1,
+                },
+            },
+        ]);
+
+        res.status(200).json({
+            success: true,
+            data: categories,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};

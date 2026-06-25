@@ -75,31 +75,6 @@ export const getBookById = async (req,res)=>{
     }
 };
 
-export const getBookByIdDashboard = async (req, res) => {
-    try {
-        const book = await Book.findById(req.params.id)
-            .populate("category", "name")
-            .populate("librarianId", "name image email");
-
-        if (!book) {
-            return res.status(404).json({
-                success: false,
-                message: "Book not found",
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            data: book,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message,
-        });
-    }
-};
-
 export const getAllBooks = async (req, res) => {
     try {
         const {
@@ -222,25 +197,6 @@ export const getBookForEdit = async (req, res) => {
   }
 };
 
-export const getAllBooksDashboard = async (req, res) => {
-    try {
-        const books = await Book.find({})
-            .populate("category", "name")
-            .populate("librarianId", "name image")
-            .sort({ createdAt: -1 });
-
-        res.status(200).json({
-            success: true,
-            data: books,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message,
-        });
-    }
-};
-
 export const updateBook = async(req,res)=>{
     try{
         const book =
@@ -315,6 +271,50 @@ export const deleteBook = async (req, res) => {
             message: "Book deleted",
         });
 
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const getAllBooksDashboard = async (req, res) => {
+    try {
+        const books = await Book.find({})
+            .populate("category", "name")
+            .populate("librarianId", "name image")
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            data: books,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const getBookByIdDashboard = async (req, res) => {
+    try {
+        const book = await Book.findById(req.params.id)
+            .populate("category", "name")
+            .populate("librarianId", "name image email");
+
+        if (!book) {
+            return res.status(404).json({
+                success: false,
+                message: "Book not found",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: book,
+        });
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -428,6 +428,27 @@ export const publishBook = async (req, res) => {
             success: true,
             message: "Book published",
             data: book,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const getFeaturedBooks = async (req, res) => {
+    try {
+        const books = await Book.find({
+            approvalStatus: "Published",
+        })
+        .populate("category", "name")
+        .sort({ createdAt: -1 })
+        .limit(6);
+
+        res.status(200).json({
+            success: true,
+            data: books,
         });
     } catch (error) {
         res.status(500).json({
