@@ -33,6 +33,15 @@ app.post(
   stripeWebhook
 );
 
+// app.post(
+//   "/api/transaction/webhook",
+//   express.raw({ type: "application/json" }),
+//   (req, res) => {
+//     console.log("Webhook route reached");
+//     res.sendStatus(200);
+//   }
+// );
+
 app.use(express.json());
 
 await connectMongoose();

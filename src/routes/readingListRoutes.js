@@ -14,21 +14,21 @@ const readingListRoutes = express.Router();
 readingListRoutes.post(
     "/",
     verifyToken,
-    role('user'),
+    role('reader'),
     addToReadingList
 );
 
 readingListRoutes.get(
     "/my-list",
     verifyToken,
-    role('user'),
+    role('reader'),
     getMyReadingList
 );
 
 readingListRoutes.delete(
     "/:id",
     verifyToken,
-    role('user'),
+    role('reader'),
     removeFromReadingList
 );
 

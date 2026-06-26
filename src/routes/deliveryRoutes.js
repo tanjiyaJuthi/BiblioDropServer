@@ -52,7 +52,7 @@ deliveryRoutes.get(
 deliveryRoutes.delete(
     "/:id",
     verifyToken,
-    role("reader"),
+    role("librarian"),
     cancelDelivery
 );
 

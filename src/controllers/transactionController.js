@@ -121,7 +121,7 @@ export const stripeWebhook = async (req, res) => {
     });
 
     if(!existing){
-      const delivery = await Delivery.create({
+      await Delivery.create({
         bookId,
         userId,
         librarianId: book.librarianId,

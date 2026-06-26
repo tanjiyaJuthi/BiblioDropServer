@@ -1,5 +1,6 @@
 import {Delivery} from "../models/deliveryModel.js";
 import {Book} from "../models/bookModel.js";
+import {ReadingList} from "../models/readingListModel.js";
 
 // Create Delivery Request
 export const createDelivery = async (req, res) => {
@@ -108,7 +109,7 @@ export const updateDeliveryStatus = async (req, res) => {
         }
 
         // Only the assigned librarian can update this delivery
-        if (delivery.librarianId.toString() !== req.user._id.toString()) {
+        if (delivery.librarianId.toString() !== req.user.id.toString()) {
             return res.status(403).json({
                 message: "Not authorized",
             });
@@ -134,6 +135,19 @@ export const updateDeliveryStatus = async (req, res) => {
 
         if(status === "Delivered"){
             delivery.deliveredDate = new Date();
+
+            const exists = await ReadingList.findOne({
+                userId: delivery.userId,
+                bookId: delivery.bookId,
+            });
+
+            if (!exists) {
+                await ReadingList.create({
+                    userId: delivery.userId,
+                    bookId: delivery.bookId,
+                    deliveryId: delivery._id,
+                });
+            }
 
             // make book available again
             await Book.findByIdAndUpdate(
