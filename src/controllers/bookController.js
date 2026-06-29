@@ -81,6 +81,8 @@ export const getAllBooks = async (req, res) => {
             search = "",
             category,
             status,
+            minFee,
+            maxFee,
             page = 1,
             limit = 12,
             sort = "newest",
@@ -117,6 +119,18 @@ export const getAllBooks = async (req, res) => {
         // Availability filter
         if (status) {
             query.status = status;
+        }
+
+        if (minFee || maxFee) {
+            query.deliveryFee = {};
+
+            if (minFee) {
+                query.deliveryFee.$gte = Number(minFee);
+            }
+
+            if (maxFee) {
+                query.deliveryFee.$lte = Number(maxFee);
+            }
         }
 
         let sortQuery = {};
@@ -185,26 +199,47 @@ export const getAllBooksDashboard = async (req, res) => {
 };
 
 export const getBooksByLibrarian = async (req, res) => {
-    try {
-        const books = await Book.find({
-                librarianId: req.user.id
-            })
-            .populate("category", "name")
-            .populate("librarianId", "name image")
-            .sort({ createdAt: -1 });
+  try {
+    const {
+      page = 1,
+      limit = 10,
+    } = req.query;
 
-        res.status(200).json({
-            success: true,
-            data: books,
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message,
-        });
-    }
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const query = {
+      librarianId: req.user.id,
+    };
+
+    const books = await Book.find(query)
+      .populate("category", "name")
+      .populate("librarianId", "name image")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNumber)
+      .select("-__v");
+
+    const total = await Book.countDocuments(query);
+
+    res.status(200).json({
+      success: true,
+      data: books,
+      pagination: {
+        total,
+        page: pageNumber,
+        limit: limitNumber,
+        totalPages: Math.ceil(total / limitNumber),
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
-
 export const getBookByIdDashboard = async (req, res) => {
     try {
         const book = await Book.findById(req.params.id)
