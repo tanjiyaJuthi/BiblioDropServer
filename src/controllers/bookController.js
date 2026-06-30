@@ -179,16 +179,34 @@ export const getAllBooks = async (req, res) => {
     }
 };
 
-export const getAllBooksDashboard = async (req, res) => {
+export const getAllBooksByAdmin = async (req, res) => {
     try {
+        const {
+            page = 1,
+            limit = 10,
+        } = req.query;
+
+        const pageNumber = Number(page);
+        const limitNumber = Number(limit);
+        const skip = (pageNumber - 1) * limitNumber;
+        const total = await Book.countDocuments();
+
         const books = await Book.find({})
             .populate("category", "name")
             .populate("librarianId", "name image")
+            .skip(skip)
+            .limit(limit)
             .sort({ createdAt: -1 });
 
         res.status(200).json({
             success: true,
             data: books,
+            pagination: {
+                page,
+                totalPages: Math.ceil(total / limit),
+                totalItems: total,
+                limit,
+            },
         });
     } catch (error) {
         res.status(500).json({
@@ -208,6 +226,7 @@ export const getBooksByLibrarian = async (req, res) => {
     const pageNumber = Number(page);
     const limitNumber = Number(limit);
     const skip = (pageNumber - 1) * limitNumber;
+    const total = await Book.countDocuments(query);
 
     const query = {
       librarianId: req.user.id,
@@ -220,8 +239,6 @@ export const getBooksByLibrarian = async (req, res) => {
       .skip(skip)
       .limit(limitNumber)
       .select("-__v");
-
-    const total = await Book.countDocuments(query);
 
     res.status(200).json({
       success: true,

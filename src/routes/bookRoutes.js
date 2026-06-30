@@ -10,7 +10,7 @@ import {
     updateBook,
     deleteBook,
     approveBook,
-    getAllBooksDashboard,
+    getAllBooksByAdmin,
     getBookForEdit,
     getPendingBooks,
     unpublishBook,
@@ -26,7 +26,7 @@ bookRoutes.get(
     "/dashboard",
     verifyToken,
     role("admin"),
-    getAllBooksDashboard
+    getAllBooksByAdmin
 );
 
 bookRoutes.get(
