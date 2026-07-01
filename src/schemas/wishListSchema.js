@@ -19,6 +19,12 @@ export const wishListSchema = new mongoose.Schema(
     }
 );
 
-wishListSchema.index({
-    bookId: 1,
-});
+wishListSchema.index(
+    {
+        userId: 1,
+        bookId: 1,
+    },
+    {
+        unique: true,
+    }
+);

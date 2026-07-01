@@ -4,8 +4,11 @@ import { Book } from "../models/bookModel.js";
 // Add book to wishlist
 export const addToWishlist = async (req, res) => {
     try {
+        // console.log(req.body);
+        // console.log(req.user);
+
         const { bookId } = req.body;
-        const userId = req.user._id;
+        const userId = req.user.id;
 
         // Check book exists
         const book = await Book.findById(bookId);
@@ -30,10 +33,14 @@ export const addToWishlist = async (req, res) => {
             });
         }
 
+        console.log("Creating wishlist...");
+
         const wishlist = await WishList.create({
             userId,
-            bookId
+            bookId,
         });
+
+        console.log("Wishlist created:", wishlist);
 
         res.status(201).json({
             success: true,
@@ -41,6 +48,8 @@ export const addToWishlist = async (req, res) => {
             data: wishlist
         });
     } catch (error) {
+        console.error(error);
+        
         res.status(500).json({
             success: false,
             message: error.message
@@ -51,7 +60,7 @@ export const addToWishlist = async (req, res) => {
 // Get user's wishlist
 export const getMyWishlist = async (req, res) => {
     try {
-        const userId = req.user._id;
+        const userId = req.user.id;
 
         const wishlist = await WishList.find({ userId })
             .populate({
@@ -79,7 +88,7 @@ export const getMyWishlist = async (req, res) => {
 export const removeFromWishlist = async (req, res) => {
     try {
         const { bookId } = req.params;
-        const userId = req.user._id;
+        const userId = req.user.id;
 
         const wishlist = await WishList.findOneAndDelete({
             userId,
@@ -110,7 +119,7 @@ export const removeFromWishlist = async (req, res) => {
 export const checkWishlist = async(req,res)=>{
     try{
         const {bookId}=req.params;
-        const userId=req.user._id;
+        const userId=req.user.id;
 
         const exists = await WishList.exists({
             userId,

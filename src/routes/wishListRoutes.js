@@ -15,28 +15,28 @@ const wishListRoutes = express.Router();
 wishListRoutes.post(
     "/",
     verifyToken,
-    role('user'),
+    role('reader'),
     addToWishlist
 );
 
 wishListRoutes.get(
     "/my",
     verifyToken,
-    role('user'),
+    role('reader'),
     getMyWishlist
 );
 
 wishListRoutes.delete(
     "/:bookId",
     verifyToken,
-    role('user'),
+    role('reader'),
     removeFromWishlist
 );
 
 wishListRoutes.get(
     "/check/:bookId",
     verifyToken,
-    role('user'),
+    role('reader'),
     checkWishlist
 );
 

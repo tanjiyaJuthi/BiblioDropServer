@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { Book } from '../models/bookModel.js';
+import { WishList } from "../models/wishListModel.js";
 import {sanitizeText} from '../lib/helper.js';
 
 export const createBook = async(req,res)=>{
