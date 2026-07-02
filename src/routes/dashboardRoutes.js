@@ -6,7 +6,7 @@ import {role} from "../middleware/role.js";
 import { 
     getReaderDashboard,
     getLibrarianDashboard,
-    
+    getAdminDashboard
 } from '../controllers/dashboardController.js';
 
 const dashboardRoutes = express.Router();
@@ -23,6 +23,13 @@ dashboardRoutes.get(
     verifyToken,
     role("librarian"),
     getLibrarianDashboard
+);
+
+dashboardRoutes.get(
+    "/admin",
+    verifyToken,
+    role("admin"),
+    getAdminDashboard
 );
 
 export default dashboardRoutes;

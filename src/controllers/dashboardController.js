@@ -4,10 +4,11 @@ import { ReadingList } from "../models/readingListModel.js";
 import { Delivery } from "../models/deliveryModel.js";
 import { Transaction } from "../models/transactionModel.js";
 import { Book } from "../models/bookModel.js";
+import { Profile } from "../models/profileModel.js";
 
 export const getReaderDashboard = async (req, res) => {
     try {
-        const userId = req.user.id;
+        const userId = new mongoose.Types.ObjectId(req.user.id);
 
         const [
             booksRead,
@@ -111,21 +112,6 @@ export const getReaderDashboard = async (req, res) => {
 export const getLibrarianDashboard = async (req, res) => {
     try {
         const librarianId = new mongoose.Types.ObjectId(req.user.id);
-
-        // console.log("Logged in librarian:", librarianId);
-        // console.log("Database:", mongoose.connection.name);
-
-        // const allTransactions = await Transaction.find();
-        // console.log("Total transactions:", allTransactions.length);
-
-        // const byId = await Transaction.findById("6a4636549981c2178b3ea3c6");
-        // console.log("Find by _id:", byId);
-
-        // const byLibrarian = await Transaction.find({
-        // librarianId: new mongoose.Types.ObjectId(librarianId),
-        // });
-
-        // console.log("Transactions for librarian:", byLibrarian);
 
         const [
             totalBooks,
@@ -246,8 +232,6 @@ export const getLibrarianDashboard = async (req, res) => {
             ]),
         ]);
 
-        // console.log(totalEarnings);
-
         res.status(200).json({
             success: true,
             data: {
@@ -259,13 +243,94 @@ export const getLibrarianDashboard = async (req, res) => {
                 requestStatus,
             },
         });
-
     } catch (error) {
-
         res.status(500).json({
             success: false,
             message: error.message,
         });
+    }
+};
 
+export const getAdminDashboard = async (req, res) => {
+    try {
+        const [
+            totalUsers,
+            totalBooks,
+            totalDeliveries,
+            revenue,
+            booksByCategory,
+        ] = await Promise.all([
+            Profile.countDocuments(),
+
+            Book.countDocuments(),
+
+            Delivery.countDocuments(),
+
+            Transaction.aggregate([
+                {
+                    $match: {
+                        paymentStatus: "Paid",
+                    },
+                },
+                {
+                    $group: {
+                        _id: null,
+                        total: {
+                            $sum: "$amount",
+                        },
+                    },
+                },
+            ]),
+
+            Book.aggregate([
+                {
+                    $lookup: {
+                        from: "categories",
+                        localField: "category",
+                        foreignField: "_id",
+                        as: "category",
+                    },
+                },
+                {
+                    $unwind: "$category",
+                },
+                {
+                    $group: {
+                        _id: "$category.name",
+                        value: {
+                            $sum: 1,
+                        },
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        name: "$_id",
+                        value: 1,
+                    },
+                },
+                {
+                    $sort: {
+                        value: -1,
+                    },
+                },
+            ])
+        ]);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                totalUsers,
+                totalBooks,
+                totalDeliveries,
+                totalRevenue: revenue[0]?.total || 0,
+                booksByCategory,
+            },
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
     }
 };
