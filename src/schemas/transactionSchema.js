@@ -20,17 +20,11 @@ export const transactionSchema = new mongoose.Schema(
       required: true,
     },
 
-    status: {
-      type: String,
-      enum: [
-        "Pending",
-        "Dispatched",
-        "Delivered",
-        "Returned",
-        "Cancelled",
-      ],
-      default: "Pending",
-    },
+    deliveryId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Delivery",
+      default: null,
+   },
 
     stripeSessionId: {
       type: String,

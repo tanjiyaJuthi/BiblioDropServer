@@ -18,6 +18,7 @@ import wishListRoutes from "./routes/wishListRoutes.js";
 import bookRoutes from "./routes/bookRoutes.js";
 import transactionRoutes from "./routes/transactionRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
 import { stripeWebhook } from "./controllers/transactionController.js";
 
 const app = express();
@@ -56,6 +57,8 @@ app.use("/api/wishList", wishListRoutes);
 app.use("/api/book", bookRoutes);
 app.use("/api/transaction", transactionRoutes);
 app.use("/api/review", reviewRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("API Running");

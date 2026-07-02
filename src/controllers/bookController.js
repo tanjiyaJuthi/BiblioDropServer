@@ -224,14 +224,14 @@ export const getBooksByLibrarian = async (req, res) => {
       limit = 10,
     } = req.query;
 
+    const query = {
+      librarianId: req.user.id,
+    };
+
     const pageNumber = Number(page);
     const limitNumber = Number(limit);
     const skip = (pageNumber - 1) * limitNumber;
     const total = await Book.countDocuments(query);
-
-    const query = {
-      librarianId: req.user.id,
-    };
 
     const books = await Book.find(query)
       .populate("category", "name")

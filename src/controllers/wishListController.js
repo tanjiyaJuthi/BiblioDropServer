@@ -32,15 +32,11 @@ export const addToWishlist = async (req, res) => {
                 message: "Book already in wishlist"
             });
         }
-
-        console.log("Creating wishlist...");
-
+        
         const wishlist = await WishList.create({
             userId,
             bookId,
         });
-
-        console.log("Wishlist created:", wishlist);
 
         res.status(201).json({
             success: true,

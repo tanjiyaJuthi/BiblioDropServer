@@ -89,7 +89,6 @@ export const createTransaction = async (req, res) => {
       stripeSessionId: session.id,
       amount: book.deliveryFee,
       paymentStatus: "Pending",
-      status: "Pending"
     });
 
     await Book.findByIdAndUpdate(bookId, {
@@ -154,7 +153,6 @@ export const stripeWebhook = async (req, res) => {
 
     transaction.paymentStatus = "Paid";
     transaction.stripePaymentIntentId = session.payment_intent;
-    await transaction.save();
 
     const book = await Book.findById(bookId);
 
@@ -165,7 +163,7 @@ export const stripeWebhook = async (req, res) => {
     });
 
     if(!existing){
-      await Delivery.create({
+      const delivery = await Delivery.create({
         bookId,
         userId,
         librarianId: book.librarianId,
@@ -175,6 +173,9 @@ export const stripeWebhook = async (req, res) => {
         deliveryStatus: "Pending",
       });
       // console.log("Delivery created:", delivery);
+
+      transaction.deliveryId = delivery._id;
+      await transaction.save();
     }
 
     await Book.findByIdAndUpdate(
@@ -214,6 +215,7 @@ export const getAdminTransactions = async (req, res) => {
     try {
         const transactions = await Transaction.find()
             .populate("userId", "email")
+            .populate("deliveryId", "deliveryStatus")
             .populate({
                 path: "bookId",
                 select: "title librarianId",
